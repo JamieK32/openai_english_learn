@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AI英语学习软件</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <aside class="sidebar">
+        <div class="sidebar-header">
+          <h2>会话</h2>
+          <p>像对话栏一样管理你的学习记录</p>
+        </div>
+        <div class="sidebar-actions">
+          <button id="newConversationBtn" type="button" class="btn-primary">
+            新建对话
+          </button>
+          <button id="clearHistoryBtn" type="button" class="btn-danger">
+            全部删除历史
+          </button>
+        </div>
+        <div id="historyList" class="history-list">
+          <p class="history-empty">暂无历史会话</p>
+        </div>
+      </aside>
+
+      <section class="workspace">
+        <header class="workspace-top">
+          <h1>AI英语学习软件</h1>
+          <p class="hint">输入英文文本后，可一键解析语法与重点词汇，并生成朗读语音。</p>
+          <div class="session-meta">
+            <span id="conversationTitle" class="conversation-title">新对话草稿</span>
+            <span id="conversationBadge" class="conversation-badge">空白草稿</span>
+          </div>
+        </header>
+
+        <section class="composer">
+          <div class="composer-row">
+            <label for="voice">声音</label>
+            <select id="voice">
+              <option value="alloy">alloy</option>
+              <option value="ash">ash</option>
+              <option value="coral">coral</option>
+              <option value="echo">echo</option>
+              <option value="fable">fable</option>
+              <option value="onyx">onyx</option>
+              <option value="nova">nova</option>
+              <option value="sage">sage</option>
+              <option value="shimmer">shimmer</option>
+            </select>
+          </div>
+
+          <label for="text">英文文本</label>
+          <textarea
+            id="text"
+            rows="6"
+            placeholder="请在这里输入或粘贴英文文本..."
+          ></textarea>
+
+          <div class="actions">
+            <button id="analyzeBtn" type="button" class="btn-secondary">一键解析</button>
+            <button id="generateBtn" type="button" class="btn-primary">生成语音</button>
+            <button id="saveConversationBtn" type="button" class="btn-outline">保存当前对话</button>
+            <span id="status">空闲</span>
+          </div>
+          <audio id="player" controls></audio>
+        </section>
+
+        <article class="dialog-card dialog-ai">
+          <div class="dialog-label">AI 解析结果</div>
+          <div id="analysis" class="dialog-content markdown-output">
+            点击“一键解析”后，这里会显示语法和重点词汇。
+          </div>
+        </article>
+      </section>
+    </main>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
