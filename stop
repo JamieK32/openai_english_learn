@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+APP_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PID_FILE="$APP_DIR/.app.pid"
+
+if [[ ! -f "$PID_FILE" ]]; then
+  echo "未找到 PID 文件，应用可能未运行。"
+  exit 0
+fi
+
+PID="$(cat "$PID_FILE" 2>/dev/null || true)"
+if [[ -z "${PID:-}" ]]; then
+  echo "PID 文件为空，已清理。"
+  rm -f "$PID_FILE"
+  exit 0
+fi
+
+if ! kill -0 "$PID" 2>/dev/null; then
+  echo "进程 $PID 不存在，已清理 PID 文件。"
+  rm -f "$PID_FILE"
+  exit 0
+fi
+
+kill "$PID" 2>/dev/null || true
+
+for _ in {1..10}; do
+  if ! kill -0 "$PID" 2>/dev/null; then
+    rm -f "$PID_FILE"
+    echo "应用已停止，PID: $PID"
+    exit 0
+  fi
+  sleep 1
+done
+
+echo "进程未在 10 秒内退出，执行强制停止..."
+kill -9 "$PID" 2>/dev/null || true
+rm -f "$PID_FILE"
+echo "应用已强制停止，PID: $PID"
