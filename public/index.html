@@ -14,11 +14,11 @@
           <p>像对话栏一样管理你的学习记录</p>
         </div>
         <div class="sidebar-actions">
-          <button id="newConversationBtn" type="button" class="btn-primary">
+          <button id="newConversationBtn" type="button" class="btn-secondary">
             新建对话
           </button>
-          <button id="clearHistoryBtn" type="button" class="btn-danger">
-            全部删除历史
+          <button id="clearHistoryBtn" type="button" class="btn-link-danger">
+            清空历史
           </button>
         </div>
         <div id="historyList" class="history-list">
@@ -28,7 +28,10 @@
 
       <section class="workspace">
         <header class="workspace-top">
-          <h1>AI英语学习软件</h1>
+          <div class="workspace-top-bar">
+            <h1>AI英语学习软件</h1>
+            <button id="envConsoleBtn" type="button" class="btn-console-entry">系统控制台</button>
+          </div>
           <p class="hint">输入英文文本后，可一键解析语法与重点词汇，并生成朗读语音。</p>
           <div class="session-meta">
             <span id="conversationTitle" class="conversation-title">新对话草稿</span>
@@ -60,12 +63,32 @@
           ></textarea>
 
           <div class="actions">
-            <button id="analyzeBtn" type="button" class="btn-secondary">一键解析</button>
-            <button id="generateBtn" type="button" class="btn-primary">生成语音</button>
+            <button id="analyzeBtn" type="button" class="btn-primary">✨ 一键解析</button>
+            <button id="generateBtn" type="button" class="btn-secondary">🔊 生成语音</button>
+            <button id="timeoutBtn" type="button" class="btn-outline">超时设置</button>
             <button id="saveConversationBtn" type="button" class="btn-outline">保存当前对话</button>
-            <span id="status">空闲</span>
+            <div class="action-meta">
+              <span id="timeoutInfo" class="timeout-info">请求超时：加载中...</span>
+              <span id="status">空闲</span>
+            </div>
           </div>
-          <audio id="player" controls></audio>
+          <div class="audio-panel">
+            <button id="audioPlayBtn" type="button" class="audio-play-btn" aria-label="播放" disabled>
+              ▶
+            </button>
+            <input
+              id="audioSeek"
+              class="audio-seek"
+              type="range"
+              min="0"
+              max="1000"
+              value="0"
+              step="1"
+              disabled
+            />
+            <span id="audioTime" class="audio-time">00:00 / 00:00</span>
+          </div>
+          <audio id="player" preload="none"></audio>
         </section>
 
         <article class="dialog-card dialog-ai">
@@ -76,6 +99,109 @@
         </article>
       </section>
     </main>
+
+    <div id="inputDialog" class="modal-backdrop" hidden>
+      <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="dialogTitle">
+        <div class="modal-header">
+          <h3 id="dialogTitle">修改</h3>
+          <p id="dialogMessage" class="modal-message"></p>
+        </div>
+        <div class="modal-body">
+          <input id="dialogInput" class="modal-input" type="text" />
+          <p id="dialogError" class="modal-error"></p>
+        </div>
+        <div class="modal-actions">
+          <button id="dialogCancelBtn" type="button" class="btn-outline">取消</button>
+          <button id="dialogConfirmBtn" type="button" class="btn-primary">确定</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="requestLoaderStack" class="request-loader-stack" aria-live="polite">
+      <div id="analyzeRequestLoader" class="request-loader request-loader-analyze" hidden>
+        <div class="request-loader-glow"></div>
+        <div class="request-loader-spinner"></div>
+        <div class="request-loader-content">
+          <p id="analyzeRequestLoaderTitle" class="request-loader-title">正在解析文本中...</p>
+          <p id="analyzeRequestLoaderCountdown" class="request-loader-countdown">剩余 0 秒</p>
+          <div class="request-loader-track">
+            <span id="analyzeRequestLoaderFill" class="request-loader-fill"></span>
+          </div>
+        </div>
+      </div>
+
+      <div id="ttsRequestLoader" class="request-loader request-loader-tts" hidden>
+        <div class="request-loader-glow"></div>
+        <div class="request-loader-spinner"></div>
+        <div class="request-loader-content">
+          <p id="ttsRequestLoaderTitle" class="request-loader-title">正在生成语音中...</p>
+          <p id="ttsRequestLoaderCountdown" class="request-loader-countdown">剩余 0 秒</p>
+          <div class="request-loader-track">
+            <span id="ttsRequestLoaderFill" class="request-loader-fill"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="envConsoleModal" class="modal-backdrop env-console-backdrop" hidden>
+      <div class="modal-card env-console-card" role="dialog" aria-modal="true" aria-labelledby="envConsoleTitle">
+        <div class="modal-header env-console-header">
+          <div>
+            <h3 id="envConsoleTitle">系统控制台</h3>
+            <p class="modal-message">管理 .env，并支持切换 OpenAI/中转 API 调用模式。</p>
+          </div>
+          <button id="consoleCloseBtn" type="button" class="btn-outline">关闭</button>
+        </div>
+
+        <form id="envConsoleForm" class="env-console-form">
+          <div class="env-grid">
+            <label for="consoleApiMode">API 模式</label>
+            <select id="consoleApiMode">
+              <option value="openai">openai（直连）</option>
+              <option value="relay">relay（中转）</option>
+            </select>
+
+            <label for="consoleRelayBaseUrl">RELAY_BASE_URL（中转地址）</label>
+            <input id="consoleRelayBaseUrl" class="modal-input" type="url" placeholder="https://your-relay-host/v1" />
+
+            <label for="consoleRelayApiKey">RELAY_API_KEY（中转密钥）</label>
+            <input id="consoleRelayApiKey" class="modal-input" type="password" placeholder="留空表示不更新" />
+            <p id="consoleRelayKeyHint" class="console-secret-hint">当前状态：未配置</p>
+            <label class="console-clear-secret">
+              <input id="consoleClearRelayApiKey" type="checkbox" />
+              清空 RELAY_API_KEY
+            </label>
+
+            <label for="consoleOpenaiBaseUrl">OPENAI_BASE_URL（可选）</label>
+            <input id="consoleOpenaiBaseUrl" class="modal-input" type="url" placeholder="可留空，默认官方地址" />
+
+            <label for="consoleOpenaiApiKey">OPENAI_API_KEY（直连密钥）</label>
+            <input id="consoleOpenaiApiKey" class="modal-input" type="password" placeholder="留空表示不更新" />
+            <p id="consoleOpenaiKeyHint" class="console-secret-hint">当前状态：未配置</p>
+            <label class="console-clear-secret">
+              <input id="consoleClearOpenaiApiKey" type="checkbox" />
+              清空 OPENAI_API_KEY
+            </label>
+
+            <label for="consoleAnalyzeModel">ANALYZE_MODEL</label>
+            <input id="consoleAnalyzeModel" class="modal-input" type="text" placeholder="gpt-5-mini" />
+
+            <label for="consoleTtsModel">TTS_MODEL</label>
+            <input id="consoleTtsModel" class="modal-input" type="text" placeholder="gpt-4o-mini-tts" />
+
+            <label for="consoleTimeoutMs">OPENAI_TIMEOUT_MS（毫秒）</label>
+            <input id="consoleTimeoutMs" class="modal-input" type="number" min="1000" step="1000" placeholder="15000" />
+          </div>
+
+          <p id="consoleStatus" class="console-status">加载中...</p>
+
+          <div class="modal-actions env-console-actions">
+            <button id="consoleCancelBtn" type="button" class="btn-outline">取消</button>
+            <button id="consoleSaveBtn" type="submit" class="btn-primary">保存并应用</button>
+          </div>
+        </form>
+      </div>
+    </div>
 
     <script src="./app.js"></script>
   </body>
