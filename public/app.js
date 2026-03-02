@@ -1592,7 +1592,7 @@ if (envConsoleFormEl) {
 if (envConsoleModalEl) {
   envConsoleModalEl.addEventListener("click", (event) => {
     if (event.target === envConsoleModalEl) {
-      closeEnvConsole();
+      event.preventDefault();
     }
   });
 }

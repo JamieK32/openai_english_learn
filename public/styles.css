@@ -9,6 +9,16 @@
   --primary-soft: #e8f0ff;
   --danger: #c53d57;
   --danger-soft: #fff2f5;
+  --console-accent: #1d4ed8;
+  --console-accent-strong: #1e40af;
+  --console-accent-soft: #e8f0ff;
+  --console-accent-soft-strong: #dce8ff;
+  --console-accent-line: #bfd1ff;
+  --console-accent-text: #163b91;
+  --console-accent-shadow: rgba(37, 99, 235, 0.2);
+  --console-status-bg: #edf3ff;
+  --console-status-border: #cadaff;
+  --console-status-text: #1f4298;
 }
 
 * {
@@ -198,14 +208,18 @@ body {
 }
 
 .btn-console-entry {
-  border: 1px solid #f2d4a9;
-  background: linear-gradient(135deg, #fff8ec 0%, #ffefd7 100%);
-  color: #8a4b00;
-  box-shadow: 0 8px 20px rgba(168, 96, 0, 0.16);
+  border: 1px solid var(--console-accent-line);
+  background: linear-gradient(
+    135deg,
+    var(--console-accent-soft) 0%,
+    var(--console-accent-soft-strong) 100%
+  );
+  color: var(--console-accent-text);
+  box-shadow: 0 8px 20px var(--console-accent-shadow);
 }
 
 .btn-console-entry:hover {
-  background: linear-gradient(135deg, #fff3df 0%, #ffe6bf 100%);
+  background: linear-gradient(135deg, #deebff 0%, #cedeff 100%);
 }
 
 .hint {
@@ -627,8 +641,8 @@ audio {
 .env-console-card {
   width: min(760px, 95vw);
   background:
-    radial-gradient(circle at 100% 0%, rgba(255, 175, 64, 0.12) 0%, rgba(255, 175, 64, 0) 42%),
-    linear-gradient(180deg, #ffffff 0%, #fffaf2 100%);
+    radial-gradient(circle at 100% 0%, rgba(37, 99, 235, 0.16) 0%, rgba(37, 99, 235, 0) 44%),
+    linear-gradient(180deg, #ffffff 0%, #f5f9ff 100%);
 }
 
 .env-console-header {
@@ -636,6 +650,11 @@ audio {
   align-items: flex-start;
   justify-content: space-between;
   gap: 12px;
+  border-bottom-color: #dfe9ff;
+}
+
+.env-console-header h3 {
+  color: var(--console-accent-strong);
 }
 
 .env-console-form {
@@ -654,7 +673,7 @@ audio {
 
 .console-secret-hint {
   margin: -2px 0 4px;
-  color: #8b4f00;
+  color: var(--console-accent-text);
   font-size: 12px;
 }
 
@@ -676,16 +695,16 @@ audio {
   margin: 14px 0 0;
   padding: 10px 12px;
   border-radius: 10px;
-  border: 1px solid #f3d8b6;
-  background: #fff7ea;
-  color: #8a4b00;
+  border: 1px solid var(--console-status-border);
+  background: var(--console-status-bg);
+  color: var(--console-status-text);
   font-size: 13px;
 }
 
 .console-status.is-error {
-  border-color: #f0b5bf;
-  background: #fff3f6;
-  color: #a11d40;
+  border-color: #efbcc6;
+  background: var(--danger-soft);
+  color: #9b1d3e;
 }
 
 .env-console-actions {
